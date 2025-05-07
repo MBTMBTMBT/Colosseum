@@ -220,13 +220,6 @@ def get_agent_class_from_name(agent_class_name: str) -> Type["BaseAgent"]:
     Type["BaseAgent"]
         The agent class corresponding to the name in input.
     """
-    return next(
-        filter(
-            lambda c: c.__name__ == agent_class_name,
-            get_colosseum_agent_classes() + config.get_external_agent_classes(),
-        )
-    )
-
     try:
         return next(
             filter(
