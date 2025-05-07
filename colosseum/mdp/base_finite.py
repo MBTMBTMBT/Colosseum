@@ -107,7 +107,7 @@ class EpisodicMDP(BaseMDP, abc.ABC):
         if "Taxi" in str(type(self)):
             # it is complicated to give the same horizon to different seed of the same MDP instance
             # for the Taxi MDP
-            minimal_H = int(1.5 * self._size ** 2)
+            minimal_H = int(1.5 * self._size**2)
         else:
             minimal_H = (
                 max(

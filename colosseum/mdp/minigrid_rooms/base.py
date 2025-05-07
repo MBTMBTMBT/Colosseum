@@ -111,13 +111,13 @@ class MiniGridRoomsMDP(BaseMDP, abc.ABC):
                     "beta",
                     (
                         sample["reward_variance_multiplier"],
-                        sample["reward_variance_multiplier"] * (size ** 2 - 1),
+                        sample["reward_variance_multiplier"] * (size**2 - 1),
                     ),
                 )
                 sample["other_distribution"] = (
                     "beta",
                     (
-                        sample["reward_variance_multiplier"] * (size ** 2 - 1),
+                        sample["reward_variance_multiplier"] * (size**2 - 1),
                         sample["reward_variance_multiplier"],
                     ),
                 )
@@ -233,7 +233,7 @@ class MiniGridRoomsMDP(BaseMDP, abc.ABC):
         rooms_per_row = int(np.sqrt(self._n_rooms))
         rooms = list(product(range(rooms_per_row), range(rooms_per_row)))
 
-        corner_rooms = list(product((0, int(self._n_rooms ** 0.5) - 1), repeat=2))
+        corner_rooms = list(product((0, int(self._n_rooms**0.5) - 1), repeat=2))
         sr = self._fast_rng.randint(0, len(corner_rooms) - 1)
         self.starting_room = corner_rooms[sr]
         corner_rooms.pop(sr)
@@ -405,13 +405,13 @@ class MiniGridRoomsMDP(BaseMDP, abc.ABC):
             self._other_distribution = other_distribution
         else:
             if make_reward_stochastic:
-                size = int(room_size * n_rooms ** 0.5)
+                size = int(room_size * n_rooms**0.5)
                 self._other_distribution = beta(
                     reward_variance_multiplier,
-                    reward_variance_multiplier * (size ** 2 - 1),
+                    reward_variance_multiplier * (size**2 - 1),
                 )
                 self._optimal_distribution = beta(
-                    reward_variance_multiplier * (size ** 2 - 1),
+                    reward_variance_multiplier * (size**2 - 1),
                     reward_variance_multiplier,
                 )
             else:

@@ -5,14 +5,10 @@ import numpy as np
 from colosseum.agent.mdp_models.bayesian_models import ConjugateModel
 
 PRIOR_TYPE = Union[
-    List[
-        float,
-    ],
+    List[float,],
     Dict[
         Tuple[int, int],
-        List[
-            float,
-        ],
+        List[float,],
     ],
 ]
 

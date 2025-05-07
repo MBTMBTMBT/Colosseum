@@ -79,9 +79,11 @@ class TaxiMDP(BaseMDP, abc.ABC):
         for _ in range(n):
             p_rand, p_lazy, _ = 0.5 * rng.dirichlet([0.2, 0.2, 5])
             sample = dict(
-                size=5
-                if is_episodic
-                else rng.choice(range(5, 8), None, True, [0.525, 0.325, 0.15]),
+                size=(
+                    5
+                    if is_episodic
+                    else rng.choice(range(5, 8), None, True, [0.525, 0.325, 0.15])
+                ),
                 p_rand=p_rand * (0.8 if is_episodic else 1),
                 p_lazy=p_lazy * (0.8 if is_episodic else 1),
                 make_reward_stochastic=rng.choice([True, False]),
@@ -122,7 +124,7 @@ class TaxiMDP(BaseMDP, abc.ABC):
 
     @property
     def _quadrant_width(self):
-        return self._size / int(self._n_locations ** 0.5) / 2
+        return self._size / int(self._n_locations**0.5) / 2
 
     @property
     def _admissible_coordinate(self):
@@ -154,7 +156,7 @@ class TaxiMDP(BaseMDP, abc.ABC):
     @property
     def _quadrants(self):
         quadrants = np.zeros((self._size, self._size))
-        split = np.array_split(range(self._size), int(self._n_locations ** 0.5))
+        split = np.array_split(range(self._size), int(self._n_locations**0.5))
         for i, (x, y) in enumerate(product(split, split)):
             for q_coo_x, q_coo_y in product(x, y):
                 quadrants[q_coo_x, q_coo_y] = i
@@ -339,7 +341,7 @@ class TaxiMDP(BaseMDP, abc.ABC):
         assert self._size > self._length
         assert self._size > self._width
         assert self._size > self._space / 2
-        assert self._size > 2 * self.n_locations ** 0.5
+        assert self._size > 2 * self.n_locations**0.5
         assert self._optimal_mean_reward - 0.1 > self._sub_optimal_mean_reward
 
         dists = [
@@ -393,7 +395,7 @@ class TaxiMDP(BaseMDP, abc.ABC):
         length=2,
         width=1,
         space=1,
-        n_locations=2 ** 2,
+        n_locations=2**2,
         optimal_mean_reward: float = 0.9,
         sub_optimal_mean_reward: float = 0.2,
         default_r: Union[Tuple, rv_continuous] = None,
@@ -453,7 +455,7 @@ class TaxiMDP(BaseMDP, abc.ABC):
         self._width = width
         self._space = space
         self.n_locations = n_locations
-        self._n_locations = int(np.ceil(n_locations ** 0.5) ** 2)
+        self._n_locations = int(np.ceil(n_locations**0.5) ** 2)
         self._optimal_mean_reward = optimal_mean_reward
         self._sub_optimal_mean_reward = sub_optimal_mean_reward
         self._locations = []
@@ -482,9 +484,9 @@ class TaxiMDP(BaseMDP, abc.ABC):
                 self._successfully_delivery_r = deterministic(1)
                 self._failure_delivery_r = deterministic(0)
 
-        kwargs[
-            "randomize_actions"
-        ] = False  # TODO : double check whether this is actually necessary or not
+        kwargs["randomize_actions"] = (
+            False  # TODO : double check whether this is actually necessary or not
+        )
 
         super(TaxiMDP, self).__init__(
             seed=seed,

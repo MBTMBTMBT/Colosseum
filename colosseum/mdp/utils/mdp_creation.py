@@ -59,7 +59,7 @@ def get_transition_matrix_and_rewards(
     """
     if not is_sparse:
         mem_bytes = os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")
-        is_sparse = n_states ** 2 * n_actions * np.float32().itemsize > 0.1 * mem_bytes
+        is_sparse = n_states**2 * n_actions * np.float32().itemsize > 0.1 * mem_bytes
     if is_sparse:
         T = dict()
     else:

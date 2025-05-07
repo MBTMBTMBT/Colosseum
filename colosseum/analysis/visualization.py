@@ -119,13 +119,19 @@ def plot_MDP_graph(
             ]
         else:
             node_color = [
-                node_palette[5]  # brown
-                if node[1] in mdp.starting_nodes and node[0] == 0
-                else node_palette[2]  # green
-                if R[mdp.node_to_index(node[1])].max() == R.max()
-                else node_palette[-2]  # yellow
-                if node[1] in mdp.recurrent_nodes_set
-                else node_palette[-3]  # grey
+                (
+                    node_palette[5]  # brown
+                    if node[1] in mdp.starting_nodes and node[0] == 0
+                    else (
+                        node_palette[2]  # green
+                        if R[mdp.node_to_index(node[1])].max() == R.max()
+                        else (
+                            node_palette[-2]  # yellow
+                            if node[1] in mdp.recurrent_nodes_set
+                            else node_palette[-3]
+                        )
+                    )
+                )  # grey
                 for node in mdp.get_episodic_graph(False).nodes
             ]
     else:
@@ -136,13 +142,19 @@ def plot_MDP_graph(
             ]
         else:
             node_color = [
-                node_palette[5]  # brown
-                if node in mdp.starting_nodes
-                else node_palette[2]  # green
-                if R[mdp.node_to_index[node]].max() == R.max()
-                else node_palette[-2]  # yellow
-                if node in mdp.recurrent_nodes_set
-                else node_palette[-3]  # grey
+                (
+                    node_palette[5]  # brown
+                    if node in mdp.starting_nodes
+                    else (
+                        node_palette[2]  # green
+                        if R[mdp.node_to_index[node]].max() == R.max()
+                        else (
+                            node_palette[-2]  # yellow
+                            if node in mdp.recurrent_nodes_set
+                            else node_palette[-3]
+                        )
+                    )
+                )  # grey
                 for node in mdp.G.nodes
             ]
 
@@ -186,34 +198,44 @@ def plot_MDP_graph(
             node_shape="s",
             ax=ax,
             node_size=node_size,
-            node_color=[action_palette[a]]
-            if cm_state_actions_labels is None
-            else [
-                cm_state_actions_labels(action_labels[an] / max(action_labels.values()))
-                for an in na_nodes
-            ],
+            node_color=(
+                [action_palette[a]]
+                if cm_state_actions_labels is None
+                else [
+                    cm_state_actions_labels(
+                        action_labels[an] / max(action_labels.values())
+                    )
+                    for an in na_nodes
+                ]
+            ),
             edgecolors="black",
         )
         nx.draw_networkx_edges(
             G,
             layout,
-            edgelist=[e for e in G.edges if type(e[0][0]) != tuple and e[1][1] == a]
-            if mdp.is_episodic() and not continuous_form
-            else [e for e in G.edges if type(e[0]) != tuple and e[1][1] == a],
+            edgelist=(
+                [e for e in G.edges if type(e[0][0]) != tuple and e[1][1] == a]
+                if mdp.is_episodic() and not continuous_form
+                else [e for e in G.edges if type(e[0]) != tuple and e[1][1] == a]
+            ),
             ax=ax,
             edge_color=action_palette[a],
         )
     nx.draw_networkx_edges(
         G,
         layout,
-        edgelist=[e for e in G.edges if type(e[0][0]) == tuple]
-        if mdp.is_episodic() and not continuous_form
-        else [e for e in G.edges if type(e[0]) == tuple],
+        edgelist=(
+            [e for e in G.edges if type(e[0][0]) == tuple]
+            if mdp.is_episodic() and not continuous_form
+            else [e for e in G.edges if type(e[0]) == tuple]
+        ),
         ax=ax,
         edge_color=action_palette[-3],
-        width=[probs[e] for e in G.edges if type(e[0][0]) == tuple]
-        if mdp.is_episodic() and not continuous_form
-        else [probs[e] for e in G.edges if type(e[0]) == tuple],
+        width=(
+            [probs[e] for e in G.edges if type(e[0][0]) == tuple]
+            if mdp.is_episodic() and not continuous_form
+            else [probs[e] for e in G.edges if type(e[0]) == tuple]
+        ),
     )
     ax.legend(ncol=ncol, fontsize=legend_fontsize)
     if node_labels is not None and not no_written_state_labels:
@@ -329,13 +351,19 @@ def plot_MCGraph(
         ]
     else:
         node_color = [
-            node_palette[0]  # brown
-            if node in mdp.starting_nodes
-            else node_palette[2]  # green
-            if R[mdp.node_to_index[node]].max() == R.max()
-            else node_palette[1]  # yellow
-            if node in mdp.recurrent_nodes_set
-            else node_palette[-1]  # grey
+            (
+                node_palette[0]  # brown
+                if node in mdp.starting_nodes
+                else (
+                    node_palette[2]  # green
+                    if R[mdp.node_to_index[node]].max() == R.max()
+                    else (
+                        node_palette[1]  # yellow
+                        if node in mdp.recurrent_nodes_set
+                        else node_palette[-1]
+                    )
+                )
+            )  # grey
             for node in mdp.G.nodes
         ]
 
@@ -352,16 +380,18 @@ def plot_MCGraph(
 
     nx.draw(
         mdp.G,
-        mdp.graph_layout
-        if prog is None
-        else nx.nx_agraph.graphviz_layout(mdp.G, prog=prog),
+        (
+            mdp.graph_layout
+            if prog is None
+            else nx.nx_agraph.graphviz_layout(mdp.G, prog=prog)
+        ),
         node_color=node_color,
         node_size=node_size,
         edgecolors="black",
         edge_color=node_palette[-3],
-        labels={}
-        if cm_state_labels is not None and no_written_state_labels
-        else labels,
+        labels=(
+            {} if cm_state_labels is not None and no_written_state_labels else labels
+        ),
         font_color=font_color_labels,
         ax=ax,
     )

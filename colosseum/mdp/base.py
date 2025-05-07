@@ -575,7 +575,7 @@ class BaseMDP(dm_env.Environment, abc.ABC):
 
     @property
     def communication_class(
-        self: Union["EpisodicMDP", "ContinuousMDP"]
+        self: Union["EpisodicMDP", "ContinuousMDP"],
     ) -> MDPCommunicationClass:
         """
         Returns
@@ -1008,16 +1008,18 @@ class BaseMDP(dm_env.Environment, abc.ABC):
                 ]
             else:
                 self._diameter = get_diameter(
-                    self.episodic_transition_matrix_and_rewards[0]
-                    if self.is_episodic()
-                    else self.T,
+                    (
+                        self.episodic_transition_matrix_and_rewards[0]
+                        if self.is_episodic()
+                        else self.T
+                    ),
                     self.is_episodic(),
                 )
         return self._diameter
 
     @property
     def sum_reciprocals_suboptimality_gaps(
-        self: Union["EpisodicMDP", "ContinuousMDP"]
+        self: Union["EpisodicMDP", "ContinuousMDP"],
     ) -> float:
         """
         Returns
@@ -1177,10 +1179,10 @@ class BaseMDP(dm_env.Environment, abc.ABC):
             The reward distribution for transitioning in next_node when selecting action from state.
         """
         if (node, action, next_node) not in self._cached_reward_distributions:
-            self._cached_reward_distributions[
-                node, action, next_node
-            ] = self._get_reward_distribution(
-                node, self._inverse_action_mapping(node, action), next_node
+            self._cached_reward_distributions[node, action, next_node] = (
+                self._get_reward_distribution(
+                    node, self._inverse_action_mapping(node, action), next_node
+                )
             )
         return self._cached_reward_distributions[node, action, next_node]
 
@@ -1397,9 +1399,11 @@ class BaseMDP(dm_env.Environment, abc.ABC):
                 assert len(V) == self.n_states
         return {
             node: np.round(
-                V[0, self.node_to_index[node]]
-                if self.is_episodic()
-                else V[self.node_to_index[node]],
+                (
+                    V[0, self.node_to_index[node]]
+                    if self.is_episodic()
+                    else V[self.node_to_index[node]]
+                ),
                 2,
             )
             for node in self.G.nodes

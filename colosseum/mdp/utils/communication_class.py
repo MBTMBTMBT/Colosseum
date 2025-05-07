@@ -102,9 +102,7 @@ def _calculate_MDP_class(T) -> MDPCommunicationClass:
     for C_k in sccs:
         is_closed = not np.any(
             np.delete(
-                T[
-                    list(C_k),
-                ],
+                T[list(C_k),],
                 list(C_k),
                 axis=-1,
             )

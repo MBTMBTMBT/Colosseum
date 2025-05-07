@@ -15,11 +15,7 @@ class ConjugateModel(ABC):
         n_actions: int,
         hyper_params: Union[
             List[float],
-            List[
-                List[
-                    float,
-                ]
-            ],
+            List[List[float,]],
         ],
         seed: int,
     ):

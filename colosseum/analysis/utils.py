@@ -125,9 +125,11 @@ def get_logs_data(
         df = pd.read_csv(log_seed_file)
         df.loc[:, "seed"] = seed
         df.loc[-1] = {
-            c: seed
-            if c == "seed"
-            else (df.loc[0, c] if c == "steps_per_second" else 0.0)
+            c: (
+                seed
+                if c == "seed"
+                else (df.loc[0, c] if c == "steps_per_second" else 0.0)
+            )
             for c in df.columns
         }
         dfs.append(df.sort_index())

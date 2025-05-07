@@ -81,9 +81,11 @@ class MiniGridEmptyMDP(BaseMDP, abc.ABC):
         for _ in range(n):
             p_rand, p_lazy, _ = 0.9 * rng.dirichlet([0.2, 0.2, 5])
             sample = dict(
-                size=int(np.minimum(5 + (14 / (8 * rng.random() + 1.0)), 20))
-                if is_episodic
-                else int(1.5 * np.minimum(5 + (14 / (8 * rng.random() + 1.0)), 20)),
+                size=(
+                    int(np.minimum(5 + (14 / (8 * rng.random() + 1.0)), 20))
+                    if is_episodic
+                    else int(1.5 * np.minimum(5 + (14 / (8 * rng.random() + 1.0)), 20))
+                ),
                 n_starting_states=rng.randint(1, 5),
                 p_rand=p_rand,
                 p_lazy=p_lazy,
@@ -329,10 +331,10 @@ class MiniGridEmptyMDP(BaseMDP, abc.ABC):
             if make_reward_stochastic:
                 self._other_distribution = beta(
                     reward_variance_multiplier,
-                    reward_variance_multiplier * (size ** 2 - 1),
+                    reward_variance_multiplier * (size**2 - 1),
                 )
                 self._optimal_distribution = beta(
-                    reward_variance_multiplier * (size ** 2 - 1),
+                    reward_variance_multiplier * (size**2 - 1),
                     reward_variance_multiplier,
                 )
             else:

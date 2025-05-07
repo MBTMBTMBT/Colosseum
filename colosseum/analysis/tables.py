@@ -113,9 +113,11 @@ def get_latex_table_of_average_indicator(
     table_lat = table.copy()
     if show_prm:
         table_lat.index = [
-            c.replace(c.split(" ")[0], " " * len(c.split(" ")[0]))
-            if i > 0 and c.split(" ")[0] == table_lat.index[i - 1].split(" ")[0]
-            else c
+            (
+                c.replace(c.split(" ")[0], " " * len(c.split(" ")[0]))
+                if i > 0 and c.split(" ")[0] == table_lat.index[i - 1].split(" ")[0]
+                else c
+            )
             for i, c in enumerate(table_lat.index)
         ]
     else:

@@ -70,9 +70,11 @@ class RiverSwimMDP(BaseMDP, abc.ABC):
         for _ in range(n):
             p_rand, p_lazy, _ = 0.9 * rng.dirichlet([0.2, 0.2, 5])
             sample = dict(
-                size=int(np.minimum(2.5 + (200 / (45 * rng.random() + 11)), 25))
-                if is_episodic
-                else int((6 * rng.random() + 2) ** 2.2),
+                size=(
+                    int(np.minimum(2.5 + (200 / (45 * rng.random() + 11)), 25))
+                    if is_episodic
+                    else int((6 * rng.random() + 2) ** 2.2)
+                ),
                 make_reward_stochastic=rng.choice([True, False]),
                 p_rand=p_rand,
                 p_lazy=p_lazy,
@@ -253,9 +255,11 @@ class RiverSwimMDP(BaseMDP, abc.ABC):
         return (
             (
                 dict(
-                    X=min(node.X + 1, self._size - 1)
-                    if action == RiverSwimAction.RIGHT
-                    else max(node.X - 1, 0),
+                    X=(
+                        min(node.X + 1, self._size - 1)
+                        if action == RiverSwimAction.RIGHT
+                        else max(node.X - 1, 0)
+                    ),
                 ),
                 1.0,
             ),

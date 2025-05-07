@@ -235,7 +235,7 @@ class DeepSeaMDP(BaseMDP, abc.ABC):
                     * (size / self._suboptimal_return - 1),
                 )
             else:
-                self._sub_optimal_distribution = deterministic(1.0 / (size ** 2))
+                self._sub_optimal_distribution = deterministic(1.0 / (size**2))
                 self._optimal_distribution = deterministic(1.0)
                 self._other_distribution = deterministic(0.0)
 
@@ -259,9 +259,11 @@ class DeepSeaMDP(BaseMDP, abc.ABC):
         return (
             (
                 dict(
-                    X=min(node.X + 1, self._size - 1)
-                    if action == DeepSeaAction.RIGHT
-                    else max(node.X - 1, 0),
+                    X=(
+                        min(node.X + 1, self._size - 1)
+                        if action == DeepSeaAction.RIGHT
+                        else max(node.X - 1, 0)
+                    ),
                     Y=max(0, node.Y - 1),
                 ),
                 1.0,

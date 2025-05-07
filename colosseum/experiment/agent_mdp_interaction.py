@@ -655,9 +655,11 @@ class MDPLoop:
             time_steps[1:] if indicator == "steps_per_second" else time_steps,
             ([] if indicator == "steps_per_second" else [0])
             + df_e.loc[:, indicator].tolist(),
-            label=clear_agent_mdp_class_name(type(self._agent).__name__)
-            if label is None
-            else label,
+            label=(
+                clear_agent_mdp_class_name(type(self._agent).__name__)
+                if label is None
+                else label
+            ),
         )
         ax.set_ylabel(indicator.replace("_", " ").capitalize())
 
@@ -672,9 +674,11 @@ class MDPLoop:
                     label=b.capitalize(),
                     # alpha=0.9,
                     linestyle=(0, (5, 10)),
-                    color="darkolivegreen"
-                    if "optimal" in b
-                    else ("darkred" if "worst" in b else "darkslategray"),
+                    color=(
+                        "darkolivegreen"
+                        if "optimal" in b
+                        else ("darkred" if "worst" in b else "darkslategray")
+                    ),
                     linewidth=2,
                 )
 

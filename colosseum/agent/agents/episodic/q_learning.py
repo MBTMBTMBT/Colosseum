@@ -66,7 +66,7 @@ class QValuesModel(BaseMDPModel):
         self._alpha_t = max(self._min_at, (self._H + 1) / (self._H + t))
 
         if self._UCB_type == "hoeffding":
-            b_t = self._c_1 * np.sqrt(self._H ** 3 * self.i / t)
+            b_t = self._c_1 * np.sqrt(self._H**3 * self.i / t)
         else:
             self.mu[time, s_t, a_t] += self.V[time + 1, s_tp1]
             self.sigma[time, s_t, a_t] += self.V[time + 1, s_tp1] ** 2
@@ -81,16 +81,16 @@ class QValuesModel(BaseMDPModel):
                                 (self.sigma[time, s_t, a_t] - self.mu[time, s_t, a_t])
                                 ** 2
                             )
-                            / t ** 2
+                            / t**2
                             + self._H
                         )
                         * self.i
                     )
-                    + np.sqrt(self._H ** 7 * self._n_states * self._n_actions)
+                    + np.sqrt(self._H**7 * self._n_states * self._n_actions)
                     * self.i
                     / t
                 ),
-                self._c_2 * np.sqrt(self._H ** 3 * self.i / t),
+                self._c_2 * np.sqrt(self._H**3 * self.i / t),
             )
             b_t = (
                 (self.beta[time, s_t, a_t] - (1 - self._alpha_t) * old_beta)

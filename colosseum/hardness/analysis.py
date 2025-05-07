@@ -201,9 +201,11 @@ def get_varying_parameter_dfs(
                     _add_result(
                         measure_results,
                         measure_name,
-                        varying_value
-                        if hap.varying_params_name != "size"
-                        else n_states,
+                        (
+                            varying_value
+                            if hap.varying_params_name != "size"
+                            else n_states
+                        ),
                         seed,
                         measure_value,
                     )
@@ -422,7 +424,7 @@ def compute_hardness_measure(
 
 
 def _process_measure(
-    measure: Union[str, Callable[[BaseMDP], float]]
+    measure: Union[str, Callable[[BaseMDP], float]],
 ) -> Tuple[str, Callable[[BaseMDP], float]]:
     if type(measure) == str:
         measure_name = measure

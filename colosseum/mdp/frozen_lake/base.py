@@ -73,9 +73,11 @@ class FrozenLakeMDP(BaseMDP, abc.ABC):
         for _ in range(n):
             p_rand, p_lazy, _ = 0.9 * rng.dirichlet([0.2, 0.2, 5])
             sample = dict(
-                size=rng.choice(range(5, 7), None, True, [0.665, 0.335])
-                if is_episodic
-                else int((2.5 + np.minimum((400 / (150 * rng.random() + 35)), 15))),
+                size=(
+                    rng.choice(range(5, 7), None, True, [0.665, 0.335])
+                    if is_episodic
+                    else int((2.5 + np.minimum((400 / (150 * rng.random() + 35)), 15)))
+                ),
                 p_frozen=min((0.55 * rng.random() + 0.45) ** 0.3, 0.95),
                 p_rand=p_rand,
                 p_lazy=p_lazy,
@@ -300,10 +302,10 @@ class FrozenLakeMDP(BaseMDP, abc.ABC):
                 self._default_r = beta(
                     reward_variance_multiplier,
                     reward_variance_multiplier
-                    * (size ** 2 / self._suboptimal_return - 1),
+                    * (size**2 / self._suboptimal_return - 1),
                 )
                 self._goal_r = beta(
-                    reward_variance_multiplier * (size ** 2 / self._optimal_return - 1),
+                    reward_variance_multiplier * (size**2 / self._optimal_return - 1),
                     reward_variance_multiplier,
                 )
             else:

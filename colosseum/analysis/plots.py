@@ -102,7 +102,7 @@ def agent_performances_per_mdp_plot(
     # Variables for the plots
     colors_dict_agents = dict(zip(available_agents, color_palette))
     n_plots = len(available_mdps)
-    h = int(np.ceil(n_plots ** 0.5)) if n_rows is None else n_rows
+    h = int(np.ceil(n_plots**0.5)) if n_rows is None else n_rows
     w = int(np.ceil(n_plots / h))
     fig, axes = plt.subplots(
         h,

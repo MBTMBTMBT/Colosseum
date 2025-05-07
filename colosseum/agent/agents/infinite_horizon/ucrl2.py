@@ -234,7 +234,7 @@ class UCRL2Continuous(BaseAgent):
                 self.estimated_holding_times[s_tm1, action] *= scale_f / (scale_f + 1.0)
                 self.estimated_holding_times[s_tm1, action] += 1 / (scale_f + 1)
 
-        for (s_tm1, action) in set(self.episode_transition_data.keys()):
+        for s_tm1, action in set(self.episode_transition_data.keys()):
             self.P[s_tm1, action] = self.N[s_tm1, action] / self.N[s_tm1, action].sum()
 
     def beta_r(self, nb_observations) -> np.ndarray:

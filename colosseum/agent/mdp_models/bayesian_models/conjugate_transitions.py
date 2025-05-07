@@ -6,14 +6,8 @@ from colosseum.agent.mdp_models.bayesian_models import ConjugateModel
 from colosseum.utils.miscellanea import state_occurencens_to_counts
 
 PRIOR_TYPE = Union[
-    List[
-        float,
-    ],
-    List[
-        List[
-            float,
-        ],
-    ],
+    List[float,],
+    List[List[float,],],
 ]
 
 
@@ -28,11 +22,7 @@ class M_DIR(ConjugateModel):
         n_actions: int,
         hyper_params: Union[
             List[float],
-            List[
-                List[
-                    float,
-                ]
-            ],
+            List[List[float,]],
         ],
         seed: int,
     ):

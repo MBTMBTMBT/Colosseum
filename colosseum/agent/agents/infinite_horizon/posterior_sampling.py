@@ -110,7 +110,7 @@ def get_eta(n_states, n_actions, T, p, omega) -> float:
     float
         The theoretical value of the :math:`\eta` parameter.
     """
-    return np.sqrt(T * n_states / n_actions) + 12 * omega * n_states ** 4
+    return np.sqrt(T * n_states / n_actions) + 12 * omega * n_states**4
 
 
 @gin.configurable
@@ -270,8 +270,7 @@ class PSRLContinuous(BaseAgent):
 
         self.truncate_reward_with_max = truncate_reward_with_max
         self.no_optimistic_sampling = (
-            no_optimistic_sampling
-            or (self._n_states ** 2 * self._n_actions) > 6_000_000
+            no_optimistic_sampling or (self._n_states**2 * self._n_actions) > 6_000_000
         )
 
         self.p = p
@@ -430,16 +429,16 @@ class PSRLContinuous(BaseAgent):
 
         for psi in range(self.psi):
             if do_posterior_sampling:
-                self.Q[
-                    tuple([np.array([psi] * len(indices_1[0]))] + indices_1)
-                ] = self._mdp_model._transitions_model.sample_sa(tuple(indices_1))
+                self.Q[tuple([np.array([psi] * len(indices_1[0]))] + indices_1)] = (
+                    self._mdp_model._transitions_model.sample_sa(tuple(indices_1))
+                )
             if do_simple_sampling:
                 z = self._rng.randint(self._n_states)
                 summing = 1 - P_minus.sum(-1)
                 P_minus[:, :, z] += summing
-                self.Q[
-                    tuple([np.array([psi] * len(indices_2[0]))] + indices_2)
-                ] = P_minus[tuple(indices_2)]
+                self.Q[tuple([np.array([psi] * len(indices_2[0]))] + indices_2)] = (
+                    P_minus[tuple(indices_2)]
+                )
                 P_minus[:, :, z] -= summing
 
     def extended_action_to_real(self, action) -> int:

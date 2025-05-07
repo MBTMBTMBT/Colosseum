@@ -85,7 +85,7 @@ def check_same_experiment(folder_1: str, folder_2: str, exclude_config: bool = F
 
 
 def check_experiments_to_run_folders_formatting(
-    experiment_configs: Optional[Dict[str, ExperimentConfig]] = None
+    experiment_configs: Optional[Dict[str, ExperimentConfig]] = None,
 ):
     """
     checks whether there are problems in the structure of the experiments folders.
