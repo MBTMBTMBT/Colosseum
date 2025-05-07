@@ -147,9 +147,11 @@ def retrieve_benchmark(
     benchmark = ColosseumBenchmark(
         os.path.basename(ensure_folder(benchmark_folder)[:-1]) + postfix,
         retrieve_mdp_configs(benchmark_folder),
-        retrieve_experiment_config(benchmark_folder)
-        if experiment_config is None
-        else experiment_config,
+        (
+            retrieve_experiment_config(benchmark_folder)
+            if experiment_config is None
+            else experiment_config
+        ),
     )
     return benchmark
 
@@ -184,12 +186,28 @@ def retrieve_experiment_config(benchmark_folder: str) -> ExperimentConfig:
 
     with open(config_fp, "r") as f:
         exp_config = yaml.load(f, yaml.Loader)
+
+    # Convert emission_map string to actual class if present
+    if "emission_map" in exp_config and isinstance(exp_config["emission_map"], str):
+        from colosseum.emission_maps import StateInfo
+        # Import other emission map classes as needed
+
+        # Map of emission map class names to actual classes
+        emission_map_classes = {
+            "StateInfo": StateInfo,
+            # Add other emission map classes here
+        }
+
+        if exp_config["emission_map"] in emission_map_classes:
+            exp_config["emission_map"] = emission_map_classes[exp_config["emission_map"]]
+
     return ExperimentConfig(**exp_config)
 
 
-def retrieve_mdp_configs(
-    benchmark_folder: str, return_string=True
-) -> Union[Dict[Type["BaseMDP"], str], Dict[Type["BaseMDP"], Dict[str, str]],]:
+def retrieve_mdp_configs(benchmark_folder: str, return_string=True) -> Union[
+    Dict[Type["BaseMDP"], str],
+    Dict[Type["BaseMDP"], Dict[str, str]],
+]:
     """
     retrieves the MDP gin configs of a benchmark.
 
@@ -214,9 +232,10 @@ def retrieve_mdp_configs(
     )
 
 
-def retrieve_agent_configs(
-    benchmark_folder: str, return_string=True
-) -> Union[Dict[Type["BaseAgent"], str], Dict[Type["BaseAgent"], Dict[str, str]],]:
+def retrieve_agent_configs(benchmark_folder: str, return_string=True) -> Union[
+    Dict[Type["BaseAgent"], str],
+    Dict[Type["BaseAgent"], Dict[str, str]],
+]:
     """
     retrieves the agent gin configs of a benchmark.
 
