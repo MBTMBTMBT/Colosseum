@@ -10,11 +10,16 @@ import os
 from colosseum.analysis.tables import get_latex_table_of_average_indicator
 from colosseum.analysis.tables import get_latex_table_of_indicators
 from colosseum.benchmark.benchmark import ColosseumDefaultBenchmark
+from colosseum.benchmark.run import instantiate_and_get_exp_instances_from_benchmark
 from colosseum.experiment.experiment_instances import run_experiment_instances
 from colosseum.agent.agents.episodic.q_learning import QLearningEpisodic
 from colosseum.agent.agents.episodic.posterior_sampling import PSRLEpisodic
 from colosseum.agent.agents.episodic.dqn import DQNEpisodic
 from colosseum.agent.agents.episodic.boot_dqn import BootDQNEpisodic
+from colosseum.analysis.plots import (
+    agent_performances_per_mdp_plot,
+    plot_indicator_in_hardness_space,
+)
 
 
 # Create a dictionary mapping agent class to its gin config
@@ -22,7 +27,7 @@ def get_agent_configs(tabular=True):
     """
     Returns a dictionary mapping agent classes to their gin configurations
     Only using episodic agents to ensure type compatibility
-    
+
     Parameters
     ----------
     tabular : bool
@@ -48,37 +53,36 @@ def get_agent_configs(tabular=True):
         prms_0/PSRLEpisodic.transitions_prior_prms = [1.0]
         """,
     }
-    
+
     # Neural network-based agents (DQN and BootDQN)
     non_tabular_agents = {
         # DQN agent
         DQNEpisodic: """
-        prms_0/DQNEpisodic.network_width = 64
-        prms_0/DQNEpisodic.network_depth = 2
-        prms_0/DQNEpisodic.batch_size = 32
-        prms_0/DQNEpisodic.sgd_period = 1
-        prms_0/DQNEpisodic.target_update_period = 4
-        prms_0/DQNEpisodic.epsilon = 0.05
-        """,
+            prms_0/DQNEpisodic.network_width = 64
+            prms_0/DQNEpisodic.network_depth = 2
+            prms_0/DQNEpisodic.batch_size = 32
+            prms_0/DQNEpisodic.sgd_period = 1
+            prms_0/DQNEpisodic.target_update_period = 4
+            prms_0/DQNEpisodic.epsilon = 0.05
+            """,
         # Bootstrap DQN agent
         BootDQNEpisodic: """
-        prms_0/BootDQNEpisodic.network_width = 64
-        prms_0/BootDQNEpisodic.network_depth = 2
-        prms_0/BootDQNEpisodic.batch_size = 32
-        prms_0/BootDQNEpisodic.sgd_period = 1
-        prms_0/BootDQNEpisodic.target_update_period = 4
-        prms_0/BootDQNEpisodic.epsilon = 0.05
-        prms_0/BootDQNEpisodic.num_ensemble = 5
-        prms_0/BootDQNEpisodic.prior_scale = 3.0
-        prms_0/BootDQNEpisodic.mask_prob = 0.5
-        """
+            prms_0/BootDQNEpisodic.network_width = 64
+            prms_0/BootDQNEpisodic.network_depth = 2
+            prms_0/BootDQNEpisodic.batch_size = 32
+            prms_0/BootDQNEpisodic.sgd_period = 1
+            prms_0/BootDQNEpisodic.target_update_period = 4
+            prms_0/BootDQNEpisodic.mask_prob = 0.5
+            prms_0/BootDQNEpisodic.noise_scale = 0.0
+            prms_0/BootDQNEpisodic.n_ensemble = 5
+            """,
     }
-    
+
     # Based on examining the agents' code, we can see that:
     # - QLearningEpisodic.is_emission_map_accepted() method checks emission_map.is_tabular
     # - PSRLEpisodic.is_emission_map_accepted() method also requires emission_map.is_tabular
     # Therefore, these agents can only work with tabular emission maps
-    
+
     return tabular_agents if tabular else non_tabular_agents
 
 
@@ -87,30 +91,30 @@ def main():
     Main function to run both tabular and non-tabular benchmarks.
     """
     results = {}
-    
-    # Run tabular experiment
-    print("\n===== RUNNING TABULAR EXPERIMENT =====\n")
-    tabular_results = run_benchmark_experiment(tabular=True)
-    results["tabular"] = tabular_results
-    
+
     # Run non-tabular experiment
     print("\n===== RUNNING NON-TABULAR EXPERIMENT =====\n")
     non_tabular_results = run_benchmark_experiment(tabular=False)
     results["non_tabular"] = non_tabular_results
-    
+
+    # Run tabular experiment
+    print("\n===== RUNNING TABULAR EXPERIMENT =====\n")
+    tabular_results = run_benchmark_experiment(tabular=True)
+    results["tabular"] = tabular_results
+
     return results
 
 
 def run_benchmark_experiment(tabular=True):
     """
     Run a benchmark experiment with either tabular or non-tabular agents.
-    
+
     Parameters
     ----------
     tabular : bool
         If True, run experiment with tabular agents and tabular emission map.
         If False, run experiment with non-tabular agents and non-tabular emission map.
-    
+
     Returns
     -------
     dict
@@ -119,8 +123,7 @@ def run_benchmark_experiment(tabular=True):
     # Step 1: Create the benchmark object using the predefined enum
     benchmark_postfix = "tabular" if tabular else "non_tabular"
     benchmark = ColosseumDefaultBenchmark.EPISODIC_COMMUNICATING.get_benchmark(
-        postfix=benchmark_postfix,
-        non_tabular=not tabular
+        postfix=benchmark_postfix, non_tabular=not tabular
     )
 
     print(f"Running benchmark: {benchmark.name}")
@@ -132,12 +135,10 @@ def run_benchmark_experiment(tabular=True):
     if not agents_configs:
         print("No compatible agents for this experiment type.")
         return None
-        
+
     print(f"Agents to evaluate: {list(agents_configs.keys())}")
 
     # Step 3: Instantiate the benchmark and get experiment instances
-    # Import after definitions to avoid circular imports
-    from colosseum.benchmark.run import instantiate_and_get_exp_instances_from_benchmark
 
     # Set overwrite_previous_experiment=True to force recreation of experiment folder
     experiment_instances = instantiate_and_get_exp_instances_from_benchmark(
@@ -181,6 +182,7 @@ def save_performance_report(experiment_folder):
     experiment_folder : str
         Path to the experiment results folder
     """
+    import matplotlib.pyplot as plt
 
     # Create reports directory if it doesn't exist
     reports_dir = os.path.join(experiment_folder, "reports")
@@ -217,17 +219,6 @@ def save_performance_report(experiment_folder):
         ],
     )
 
-    # Generate comprehensive indicators table
-    print("- Generating comprehensive indicators table...")
-    indicators_table = get_latex_table_of_indicators(
-        experiment_folder=experiment_folder,
-        indicators=[
-            "normalized_cumulative_regret",
-            "cumulative_reward",
-            "steps_per_second",
-        ],
-    )
-
     # Save tables to files
     with open(os.path.join(reports_dir, "regret_table.tex"), "w") as f:
         f.write(regret_table)
@@ -241,10 +232,39 @@ def save_performance_report(experiment_folder):
     with open(os.path.join(reports_dir, "detailed_table.tex"), "w") as f:
         f.write(detailed_table)
 
-    with open(os.path.join(reports_dir, "indicators_table.tex"), "w") as f:
-        f.write(indicators_table)
+    # Generate and save performance plots
+    print("- Generating agent performance plots...")
 
-    print("All performance reports successfully saved!")
+    # Plot regret performance across MDPs
+    regret_fig = agent_performances_per_mdp_plot(
+        experiment_folder=experiment_folder,
+        indicator="normalized_cumulative_regret",
+        figsize_scale=6,
+        standard_error=True,
+        savefig_folder=reports_dir,
+    )
+
+    # Plot reward performance across MDPs
+    reward_fig = agent_performances_per_mdp_plot(
+        experiment_folder=experiment_folder,
+        indicator="cumulative_reward",
+        figsize_scale=6,
+        standard_error=True,
+        savefig_folder=reports_dir,
+    )
+
+    # Plot performance in hardness space
+    try:
+        hardness_fig = plot_indicator_in_hardness_space(
+            experiment_folder=experiment_folder,
+            indicator="normalized_cumulative_regret",
+            fig_size=6,
+            savefig_folder=reports_dir,
+        )
+    except Exception as e:
+        print(f"Note: Could not generate hardness space plot. Reason: {e}")
+
+    print("All performance reports and plots successfully saved!")
 
 
 if __name__ == "__main__":
