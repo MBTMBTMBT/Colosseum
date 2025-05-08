@@ -83,18 +83,17 @@ def get_agent_configs(tabular=True):
         ActorCriticEpisodic: """
             prms_0/ActorCriticEpisodic.network_width = 64
             prms_0/ActorCriticEpisodic.network_depth = 2
-            prms_0/ActorCriticEpisodic.batch_size = 32
-            prms_0/ActorCriticEpisodic.learning_rate = 1e-3
-            prms_0/ActorCriticEpisodic.entropy_cost = 0.01
+            prms_0/ActorCriticEpisodic.max_sequence_length = 32
+            prms_0/ActorCriticEpisodic.td_lambda = 0.9
             """,
         # Actor-Critic with RNN agent
         ActorCriticRNNEpisodic: """
             prms_0/ActorCriticRNNEpisodic.network_width = 64
-            prms_0/ActorCriticRNNEpisodic.core_hidden_size = 128
-            prms_0/ActorCriticRNNEpisodic.batch_size = 32
-            prms_0/ActorCriticRNNEpisodic.learning_rate = 1e-3
-            prms_0/ActorCriticRNNEpisodic.entropy_cost = 0.01
+            prms_0/ActorCriticRNNEpisodic.network_depth = 2
+            prms_0/ActorCriticRNNEpisodic.max_sequence_length = 32
+            prms_0/ActorCriticRNNEpisodic.td_lambda = 0.9
             """
+
     }
 
     # Based on examining the agents' code, we can see that:
@@ -112,7 +111,7 @@ def main():
     results = {}
 
     from colosseum.config import enable_multiprocessing
-    enable_multiprocessing(max_cores=16)
+    enable_multiprocessing(max_cores=None)
 
     # Run tabular experiment
     print("\n===== RUNNING TABULAR EXPERIMENT =====\n")

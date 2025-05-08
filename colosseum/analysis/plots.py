@@ -495,10 +495,14 @@ def plot_indicator_in_hardness_space(
     # Extract numerical values from formatted strings
     df_numerical = df.applymap(lambda s: float(re.findall("\\d+\\.\\d+", s)[0]))
 
-    # Create figure with subplots for each agent
+    # Create figure with subplots for each agent - adjust width to account for colorbar
+    total_width = len(df.index) * fig_size
     fig, axes = plt.subplots(
-        1, len(df.index), figsize=(len(df.index) * fig_size + 1, fig_size), sharey=True
+        1, len(df.index), figsize=(total_width, fig_size), sharey=True
     )
+
+    # For proper right margin to accommodate the colorbar
+    plt.subplots_adjust(right=0.85)
 
     # Handle case with only one agent
     if len(df.index) == 1:
@@ -525,12 +529,16 @@ def plot_indicator_in_hardness_space(
     sm = plt.cm.ScalarMappable(cmap=color_map, norm=norm)
     sm.set_array([])
 
-    # Add colorbar to the right of the last subplot
-    cbar = fig.colorbar(sm, ax=axes.ravel().tolist(), orientation='vertical',
-                        label=f'{indicator.replace("_", " ").title()}')
+    # Create a dedicated axis for the colorbar
+    cbar_ax = fig.add_axes([0.87, 0.15, 0.02, 0.7])  # [left, bottom, width, height]
+
+    # Add colorbar with smaller font size
+    cbar = fig.colorbar(sm, cax=cbar_ax)
+    cbar.set_label(f'{indicator.replace("_", " ").title()}', fontsize=fontsize - 4)
     cbar.ax.tick_params(labelsize=fontsize - 6)
 
-    plt.tight_layout()
+    # Apply tight layout but exclude the colorbar area
+    plt.tight_layout(rect=[0, 0, 0.85, 1])
 
     # Save figure if folder is provided
     if savefig_folder is not None:
