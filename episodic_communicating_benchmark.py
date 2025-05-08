@@ -92,15 +92,15 @@ def main():
     """
     results = {}
 
-    # Run non-tabular experiment
-    print("\n===== RUNNING NON-TABULAR EXPERIMENT =====\n")
-    non_tabular_results = run_benchmark_experiment(tabular=False)
-    results["non_tabular"] = non_tabular_results
-
     # Run tabular experiment
     print("\n===== RUNNING TABULAR EXPERIMENT =====\n")
     tabular_results = run_benchmark_experiment(tabular=True)
     results["tabular"] = tabular_results
+
+    # Run non-tabular experiment
+    print("\n===== RUNNING NON-TABULAR EXPERIMENT =====\n")
+    non_tabular_results = run_benchmark_experiment(tabular=False)
+    results["non_tabular"] = non_tabular_results
 
     return results
 
@@ -193,20 +193,38 @@ def save_performance_report(experiment_folder):
     # Generate regret performance table
     print("- Generating regret performance table...")
     regret_table = get_latex_table_of_average_indicator(
-        experiment_folder=experiment_folder, indicator="normalized_cumulative_regret"
+        experiment_folder=experiment_folder, 
+        indicator="normalized_cumulative_regret",
+        return_table=True
     )
+    if isinstance(regret_table, tuple):
+        regret_latex, regret_df = regret_table
+    else:
+        regret_latex = regret_table.to_latex(escape=False)
 
     # Generate reward performance table
     print("- Generating reward performance table...")
     reward_table = get_latex_table_of_average_indicator(
-        experiment_folder=experiment_folder, indicator="cumulative_reward"
+        experiment_folder=experiment_folder, 
+        indicator="cumulative_reward",
+        return_table=True
     )
+    if isinstance(reward_table, tuple):
+        reward_latex, reward_df = reward_table
+    else:
+        reward_latex = reward_table.to_latex(escape=False)
 
     # Generate efficiency performance table
     print("- Generating computational efficiency table...")
     efficiency_table = get_latex_table_of_average_indicator(
-        experiment_folder=experiment_folder, indicator="steps_per_second"
+        experiment_folder=experiment_folder, 
+        indicator="steps_per_second",
+        return_table=True
     )
+    if isinstance(efficiency_table, tuple):
+        efficiency_latex, efficiency_df = efficiency_table
+    else:
+        efficiency_latex = efficiency_table.to_latex(escape=False)
 
     # Generate detailed multi-indicator table
     print("- Generating detailed multi-indicator table...")
@@ -221,13 +239,13 @@ def save_performance_report(experiment_folder):
 
     # Save tables to files
     with open(os.path.join(reports_dir, "regret_table.tex"), "w") as f:
-        f.write(regret_table)
+        f.write(regret_latex)
 
     with open(os.path.join(reports_dir, "reward_table.tex"), "w") as f:
-        f.write(reward_table)
+        f.write(reward_latex)
 
     with open(os.path.join(reports_dir, "efficiency_table.tex"), "w") as f:
-        f.write(efficiency_table)
+        f.write(efficiency_latex)
 
     with open(os.path.join(reports_dir, "detailed_table.tex"), "w") as f:
         f.write(detailed_table)

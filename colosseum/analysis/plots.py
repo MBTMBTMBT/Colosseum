@@ -153,7 +153,7 @@ def agent_performances_per_mdp_plot(
             bbox_inches="tight",
         )
 
-    plt.show()
+    # plt.show()
 
     return fig
 
@@ -354,7 +354,7 @@ def plot_labels_on_benchmarks_hardness_space(
 
     if show:
         plt.tight_layout()
-        plt.show()
+        # plt.show()
 
 
 def plot_indicator_in_hardness_space(
@@ -440,7 +440,7 @@ def plot_indicator_in_hardness_space(
             f"{ensure_folder(savefig_folder)}{indicator}_in_hard_space_{exp_name}.pdf",
             bbox_inches="tight",
         )
-    plt.show()
+    # plt.show()
 
     return fig
 
