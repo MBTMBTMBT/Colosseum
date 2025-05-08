@@ -357,46 +357,133 @@ def plot_labels_on_benchmarks_hardness_space(
         # plt.show()
 
 
+# def plot_indicator_in_hardness_space(
+#     experiment_folder: str,
+#     indicator: str = "normalized_cumulative_regret",
+#     fontsize: int = 22,
+#     cmap: str = "Reds",
+#     fig_size=8,
+#     text_label_fontsize=14,
+#     savefig_folder: Optional[str] = "tmp",
+# ) -> "Figure":
+#     """
+#     for each agent config, it produces a plot that places the given indicator obtained by the agent config for each MDP
+#     config in the position corresponding to the diameter and value norm of the MDP.
+#
+#     Parameters
+#     ----------
+#     experiment_folder : str
+#         The path of the directory containing the experiment results.
+#     indicator : str
+#         is a string representing the performance indicator that is shown in the plot. Check `MDPLoop.get_indicators()`
+#         to get a list of the available indicators. By default, the 'normalized_cumulative_regret' is used.
+#     fontsize : int
+#         The font size for x and indicator labels. By default, it is set to :math:`22`.
+#     cmap : str
+#         The code name for the color map to be used when plotting the indicator values. By default,
+#         the 'Reds' color map is used.
+#     fig_size : int
+#         The size of the figures in the grid of plots. By default, it is set to :math:`8`.
+#     text_label_fontsize : int
+#         The font size for the text labels of the points. By default, it is set to :math:`14`.
+#     savefig_folder : str
+#         The folder where the figure will be saved. By default, the figure it is saved in a local folder with name 'tmp'.
+#         If the directory does not exist, it is created.
+#
+#     Returns
+#     -------
+#     Figure
+#         The matplotlib figure.
+#     """
+#
+#     color_map = matplotlib.cm.get_cmap(cmap)
+#     _, df = get_latex_table_of_average_indicator(
+#         experiment_folder,
+#         indicator,
+#         show_prm=True,
+#         return_table=True,
+#         mdps_on_row=False,
+#     )
+#     df_numerical = df.applymap(lambda s: float(re.findall("\d+\.\d+", s)[0]))
+#     fig, axes = plt.subplots(
+#         1, len(df.index), figsize=(len(df.index) * fig_size + 1, fig_size), sharey=True
+#     )
+#     if len(df.index) == 1:
+#         axes = np.array([axes])
+#     for i, (a, ax) in enumerate(zip(df.index, axes.tolist())):
+#         plot_labels_on_benchmarks_hardness_space(
+#             experiment_folder,
+#             label_f=lambda x: None,
+#             color_f=lambda x: color_map(
+#                 df_numerical.loc[a, _get_index(x)] / df_numerical.loc[a].max()
+#             ),
+#             text_f=lambda x: f"{_get_index(x)[0].replace('MiniGrid', 'MG-')} "
+#             f"({(_get_index(x)[1].replace('prms_', ''))})",
+#             # text_f=lambda x: "",
+#             ax=ax,
+#             fontsize=fontsize,
+#             text_label_fontsize=text_label_fontsize,
+#             underneath_x_label=f"({ascii_lowercase[i]}) {a[0]}",
+#         )
+#         # ax.set_title(
+#         #     f"({ascii_lowercase[i]}) {a[0]}",
+#         #     fontdict=dict(legend_fontsize=legend_fontsize + 4),
+#         #     indicator=-0.28,
+#         # )
+#
+#     plt.tight_layout()
+#
+#     if savefig_folder is not None:
+#         os.makedirs(savefig_folder, exist_ok=True)
+#         exp_name = os.path.basename(os.path.dirname(ensure_folder(experiment_folder)))
+#         plt.savefig(
+#             f"{ensure_folder(savefig_folder)}{indicator}_in_hard_space_{exp_name}.pdf",
+#             bbox_inches="tight",
+#         )
+#     # plt.show()
+#
+#     return fig
+
+
 def plot_indicator_in_hardness_space(
-    experiment_folder: str,
-    indicator: str = "normalized_cumulative_regret",
-    fontsize: int = 22,
-    cmap: str = "Reds",
-    fig_size=8,
-    text_label_fontsize=14,
-    savefig_folder: Optional[str] = "tmp",
+        experiment_folder: str,
+        indicator: str = "normalized_cumulative_regret",
+        fontsize: int = 22,
+        cmap: str = "Reds",
+        fig_size=8,
+        text_label_fontsize=14,
+        savefig_folder: Optional[str] = "tmp",
 ) -> "Figure":
     """
-    for each agent config, it produces a plot that places the given indicator obtained by the agent config for each MDP
-    config in the position corresponding to the diameter and value norm of the MDP.
+    Plot the indicator value for each MDP in the hardness space defined by diameter and value norm,
+    with color intensity representing the indicator value.
 
     Parameters
     ----------
     experiment_folder : str
         The path of the directory containing the experiment results.
     indicator : str
-        is a string representing the performance indicator that is shown in the plot. Check `MDPLoop.get_indicators()`
-        to get a list of the available indicators. By default, the 'normalized_cumulative_regret' is used.
+        Performance indicator to be shown in the plot. Default: 'normalized_cumulative_regret'
     fontsize : int
-        The font size for x and indicator labels. By default, it is set to :math:`22`.
+        Font size for x and y labels. Default: 22
     cmap : str
-        The code name for the color map to be used when plotting the indicator values. By default,
-        the 'Reds' color map is used.
+        Colormap name for the indicator values. Default: 'Reds'
     fig_size : int
-        The size of the figures in the grid of plots. By default, it is set to :math:`8`.
+        Size of the figures in the grid of plots. Default: 8
     text_label_fontsize : int
-        The font size for the text labels of the points. By default, it is set to :math:`14`.
-    savefig_folder : str
-        The folder where the figure will be saved. By default, the figure it is saved in a local folder with name 'tmp'.
-        If the directory does not exist, it is created.
+        Font size for the text labels of the points. Default: 14
+    savefig_folder : Optional[str]
+        Folder to save the figure. Default: 'tmp'
 
     Returns
     -------
     Figure
         The matplotlib figure.
     """
-
+    # Get colormap
     color_map = matplotlib.cm.get_cmap(cmap)
+
+    # Get data
     _, df = get_latex_table_of_average_indicator(
         experiment_folder,
         indicator,
@@ -404,12 +491,20 @@ def plot_indicator_in_hardness_space(
         return_table=True,
         mdps_on_row=False,
     )
-    df_numerical = df.applymap(lambda s: float(re.findall("\d+\.\d+", s)[0]))
+
+    # Extract numerical values from formatted strings
+    df_numerical = df.applymap(lambda s: float(re.findall("\\d+\\.\\d+", s)[0]))
+
+    # Create figure with subplots for each agent
     fig, axes = plt.subplots(
         1, len(df.index), figsize=(len(df.index) * fig_size + 1, fig_size), sharey=True
     )
+
+    # Handle case with only one agent
     if len(df.index) == 1:
         axes = np.array([axes])
+
+    # Plot each agent in a separate subplot
     for i, (a, ax) in enumerate(zip(df.index, axes.tolist())):
         plot_labels_on_benchmarks_hardness_space(
             experiment_folder,
@@ -418,21 +513,26 @@ def plot_indicator_in_hardness_space(
                 df_numerical.loc[a, _get_index(x)] / df_numerical.loc[a].max()
             ),
             text_f=lambda x: f"{_get_index(x)[0].replace('MiniGrid', 'MG-')} "
-            f"({(_get_index(x)[1].replace('prms_', ''))})",
-            # text_f=lambda x: "",
+                             f"({(_get_index(x)[1].replace('prms_', ''))})",
             ax=ax,
             fontsize=fontsize,
             text_label_fontsize=text_label_fontsize,
             underneath_x_label=f"({ascii_lowercase[i]}) {a[0]}",
         )
-        # ax.set_title(
-        #     f"({ascii_lowercase[i]}) {a[0]}",
-        #     fontdict=dict(legend_fontsize=legend_fontsize + 4),
-        #     indicator=-0.28,
-        # )
+
+    # Add colorbar to represent indicator values
+    norm = matplotlib.colors.Normalize(vmin=df_numerical.min().min(), vmax=df_numerical.max().max())
+    sm = plt.cm.ScalarMappable(cmap=color_map, norm=norm)
+    sm.set_array([])
+
+    # Add colorbar to the right of the last subplot
+    cbar = fig.colorbar(sm, ax=axes.ravel().tolist(), orientation='vertical',
+                        label=f'{indicator.replace("_", " ").title()}')
+    cbar.ax.tick_params(labelsize=fontsize - 6)
 
     plt.tight_layout()
 
+    # Save figure if folder is provided
     if savefig_folder is not None:
         os.makedirs(savefig_folder, exist_ok=True)
         exp_name = os.path.basename(os.path.dirname(ensure_folder(experiment_folder)))
@@ -440,7 +540,127 @@ def plot_indicator_in_hardness_space(
             f"{ensure_folder(savefig_folder)}{indicator}_in_hard_space_{exp_name}.pdf",
             bbox_inches="tight",
         )
-    # plt.show()
+
+    return fig
+
+
+def plot_indicator_in_hardness_space_3d(
+        experiment_folder: str,
+        indicator: str = "normalized_cumulative_regret",
+        fontsize: int = 22,
+        cmap: str = "viridis",  # Better colormap for 3D visualization
+        fig_size=8,
+        text_label_fontsize=12,
+        savefig_folder: Optional[str] = "tmp",
+        elevation=30,  # Viewing angle - elevation
+        azimuth=30,  # Viewing angle - azimuth
+) -> "Figure":
+    """
+    Plot the indicator value for each MDP in a 3D space:
+    - X-axis: Diameter
+    - Y-axis: Value Norm
+    - Z-axis: Indicator value (e.g., regret)
+
+    Parameters
+    ----------
+    experiment_folder : str
+        The path of the directory containing the experiment results.
+    indicator : str
+        Performance indicator to be shown in the plot. Default: 'normalized_cumulative_regret'
+    fontsize : int
+        Font size for axis labels. Default: 22
+    cmap : str
+        Colormap name for the indicator values. Default: 'viridis'
+    fig_size : int
+        Size of the figures in the grid of plots. Default: 8
+    text_label_fontsize : int
+        Font size for the text labels of the points. Default: 12
+    savefig_folder : Optional[str]
+        Folder to save the figure. Default: 'tmp'
+    elevation : int
+        3D view elevation angle in degrees. Default: 30
+    azimuth : int
+        3D view azimuth angle in degrees. Default: 30
+
+    Returns
+    -------
+    Figure
+        The matplotlib figure.
+    """
+    # Get data
+    _, df = get_latex_table_of_average_indicator(
+        experiment_folder,
+        indicator,
+        show_prm=True,
+        return_table=True,
+        mdps_on_row=False,
+    )
+
+    # Extract numerical values from formatted strings
+    df_numerical = df.applymap(lambda s: float(re.findall("\\d+\\.\\d+", s)[0]))
+
+    # Create figure
+    fig = plt.figure(figsize=(len(df.index) * fig_size + 1, fig_size))
+
+    # Get hardness measures data
+    hardness_measures = get_hardness_measures_from_experiment_folder(
+        experiment_folder, ("diameter", "value_norm")
+    )
+
+    # Create a subplot for each agent
+    for i, agent_idx in enumerate(df.index):
+        agent_name = agent_idx[0]
+
+        # Create 3D subplot
+        ax = fig.add_subplot(1, len(df.index), i + 1, projection='3d')
+
+        # Plot each MDP as a point in 3D space
+        for mdp_key, measures in hardness_measures.items():
+            # Get x and y coordinates (hardness measures)
+            x = measures["diameter"]
+            y = measures["value_norm"]
+
+            # Get z coordinate (performance indicator)
+            mdp_idx = _get_index(mdp_key)
+            z = df_numerical.loc[agent_idx, mdp_idx]
+
+            # Plot 3D point
+            ax.scatter(x, y, z, s=150,
+                       label=f"{mdp_idx[0].replace('MiniGrid', 'MG-')} ({mdp_idx[1].replace('prms_', '')})")
+
+            # Add projection line to xy-plane for better 3D perception
+            ax.plot([x, x], [y, y], [0, z], 'k--', alpha=0.3)
+
+            # Add text label
+            ax.text(x, y, z,
+                    f"{mdp_idx[0].replace('MiniGrid', 'MG-')} ({mdp_idx[1].replace('prms_', '')})",
+                    size=text_label_fontsize)
+
+        # Set axis labels
+        ax.set_xlabel('Diameter', fontsize=fontsize)
+        ax.set_ylabel('Value Norm', fontsize=fontsize)
+        ax.set_zlabel(indicator.replace('_', ' ').title(), fontsize=fontsize)
+
+        # Set subplot title
+        ax.set_title(f"({ascii_lowercase[i]}) {agent_name}", fontsize=fontsize)
+
+        # Set viewing angle
+        ax.view_init(elev=elevation, azim=azimuth)
+
+        # Set tick label size
+        ax.tick_params(labelsize=fontsize - 6)
+
+    # Adjust layout
+    plt.tight_layout()
+
+    # Save figure if folder is provided
+    if savefig_folder is not None:
+        os.makedirs(savefig_folder, exist_ok=True)
+        exp_name = os.path.basename(os.path.dirname(ensure_folder(experiment_folder)))
+        plt.savefig(
+            f"{ensure_folder(savefig_folder)}{indicator}_in_hard_space_3d_{exp_name}.pdf",
+            bbox_inches="tight",
+        )
 
     return fig
 

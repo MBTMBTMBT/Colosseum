@@ -19,6 +19,7 @@ from colosseum.agent.agents.episodic.boot_dqn import BootDQNEpisodic
 from colosseum.analysis.plots import (
     agent_performances_per_mdp_plot,
     plot_indicator_in_hardness_space,
+    plot_indicator_in_hardness_space_3d,
 )
 
 
@@ -92,10 +93,16 @@ def main():
     """
     results = {}
 
+    from colosseum.config import enable_multiprocessing
+    enable_multiprocessing(max_cores=16)
+
     # Run tabular experiment
     print("\n===== RUNNING TABULAR EXPERIMENT =====\n")
     tabular_results = run_benchmark_experiment(tabular=True)
     results["tabular"] = tabular_results
+
+    from colosseum.config import enable_multiprocessing
+    enable_multiprocessing(max_cores=4)
 
     # Run non-tabular experiment
     print("\n===== RUNNING NON-TABULAR EXPERIMENT =====\n")
@@ -276,7 +283,13 @@ def save_performance_report(experiment_folder):
         hardness_fig = plot_indicator_in_hardness_space(
             experiment_folder=experiment_folder,
             indicator="normalized_cumulative_regret",
-            fig_size=6,
+            fig_size=8,
+            savefig_folder=reports_dir,
+        )
+        hardness_fig = plot_indicator_in_hardness_space_3d(
+            experiment_folder=experiment_folder,
+            indicator="normalized_cumulative_regret",
+            fig_size=8,
             savefig_folder=reports_dir,
         )
     except Exception as e:
@@ -286,7 +299,13 @@ def save_performance_report(experiment_folder):
 
 
 if __name__ == "__main__":
-    from colosseum.config import enable_multiprocessing
-    enable_multiprocessing(max_cores=16)
+    import tensorflow as tf
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    if gpus:
+        try:
+            for gpu in gpus:
+                tf.config.experimental.set_memory_growth(gpu, True)
+        except RuntimeError as e:
+            print(e)
     # This ensures the script runs only when executed directly
     results = main()
