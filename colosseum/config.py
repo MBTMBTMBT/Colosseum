@@ -19,11 +19,14 @@ EXPERIMENT_SEPARATOR_MDP_AGENT = "____"
 _AVAILABLE_CORES = 1
 
 
-def enable_multiprocessing():
+def enable_multiprocessing(max_cores: int = None):
     """
     sets the number of cores available to the number of cores in the machine minus two.
     """
-    set_available_cores(os.cpu_count() - 2)
+    if max_cores:
+        set_available_cores(max_cores)
+    else:
+        set_available_cores(os.cpu_count() - 2)
 
 
 def disable_multiprocessing():
