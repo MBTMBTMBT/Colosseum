@@ -286,5 +286,7 @@ def save_performance_report(experiment_folder):
 
 
 if __name__ == "__main__":
+    from colosseum.config import enable_multiprocessing
+    enable_multiprocessing()
     # This ensures the script runs only when executed directly
     results = main()
