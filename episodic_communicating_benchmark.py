@@ -16,6 +16,8 @@ from colosseum.agent.agents.episodic.q_learning import QLearningEpisodic
 from colosseum.agent.agents.episodic.posterior_sampling import PSRLEpisodic
 from colosseum.agent.agents.episodic.dqn import DQNEpisodic
 from colosseum.agent.agents.episodic.boot_dqn import BootDQNEpisodic
+from colosseum.agent.agents.episodic.actor_critic import ActorCriticEpisodic
+from colosseum.agent.agents.episodic.actor_critic_rnn import ActorCriticRNNEpisodic
 from colosseum.analysis.plots import (
     agent_performances_per_mdp_plot,
     plot_indicator_in_hardness_space,
@@ -35,7 +37,7 @@ def get_agent_configs(tabular=True):
         If True, return only tabular agents. If False, return only non-tabular agents.
     """
 
-    # Tabular agents (QLearning and PSRL)
+    # Tabular agents (QLearning and PSRL) - 只保留适合episodic环境的
     tabular_agents = {
         # Q-Learning agent
         QLearningEpisodic: """
@@ -55,7 +57,7 @@ def get_agent_configs(tabular=True):
         """,
     }
 
-    # Neural network-based agents (DQN and BootDQN)
+    # Neural network-based agents (DQN, BootDQN, ActorCritic, ActorCriticRNN) - 只保留适合episodic环境的
     non_tabular_agents = {
         # DQN agent
         DQNEpisodic: """
@@ -77,6 +79,22 @@ def get_agent_configs(tabular=True):
             prms_0/BootDQNEpisodic.noise_scale = 0.0
             prms_0/BootDQNEpisodic.n_ensemble = 5
             """,
+        # Actor-Critic agent
+        ActorCriticEpisodic: """
+            prms_0/ActorCriticEpisodic.network_width = 64
+            prms_0/ActorCriticEpisodic.network_depth = 2
+            prms_0/ActorCriticEpisodic.batch_size = 32
+            prms_0/ActorCriticEpisodic.learning_rate = 1e-3
+            prms_0/ActorCriticEpisodic.entropy_cost = 0.01
+            """,
+        # Actor-Critic with RNN agent
+        ActorCriticRNNEpisodic: """
+            prms_0/ActorCriticRNNEpisodic.network_width = 64
+            prms_0/ActorCriticRNNEpisodic.core_hidden_size = 128
+            prms_0/ActorCriticRNNEpisodic.batch_size = 32
+            prms_0/ActorCriticRNNEpisodic.learning_rate = 1e-3
+            prms_0/ActorCriticRNNEpisodic.entropy_cost = 0.01
+            """
     }
 
     # Based on examining the agents' code, we can see that:
@@ -101,8 +119,8 @@ def main():
     tabular_results = run_benchmark_experiment(tabular=True)
     results["tabular"] = tabular_results
 
-    from colosseum.config import enable_multiprocessing
-    enable_multiprocessing(max_cores=4)
+    from colosseum.config import disable_multiprocessing
+    disable_multiprocessing()
 
     # Run non-tabular experiment
     print("\n===== RUNNING NON-TABULAR EXPERIMENT =====\n")
