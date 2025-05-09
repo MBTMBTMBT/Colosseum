@@ -110,7 +110,7 @@ class ActorCriticRNNEpisodic(NonTabularBsuiteAgentWrapper):
 
         network = PolicyValueRNN(
             hidden_sizes=[network_width] * network_depth,
-            n_actions=mdp_specs.actions.num_values,
+            num_actions=mdp_specs.actions.num_values,
         )
         agent = ActorCriticRNN(
             obs_spec=mdp_specs.observations,
